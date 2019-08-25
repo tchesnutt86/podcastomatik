@@ -1,0 +1,9 @@
+.vs/
+/Podcastomatik/Podcastomatik/obj
+/Podcastomatik/Podcastomatik/bin/Debug/netstandard2.0
+/Podcastomatik/Podcastomatik.Android/bin/Debug
+/Podcastomatik/Podcastomatik.Android/obj
+/Podcastomatik/Podcastomatik.iOS/bin/iPhoneSimulator/Debug
+/Podcastomatik/Podcastomatik.iOS/obj
+/Podcastomatik.Shared/bin/Debug/netstandard2.0
+/Podcastomatik.Shared/obj

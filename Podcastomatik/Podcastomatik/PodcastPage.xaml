@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Podcastomatik.Controls"
+             x:Class="Podcastomatik.PodcastPage"
+             NavigationPage.HasNavigationBar="false">
+    <ContentPage.Content>
+        <RelativeLayout>
+            <StackLayout>
+                <controls:MainActionBar></controls:MainActionBar>
+
+                <StackLayout Orientation="Horizontal">
+                    <Image Source="{Binding PodcastImageSource}" HorizontalOptions="StartAndExpand" />
+                    <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
+                        <Label Text="{Binding Podcast.Title}" VerticalOptions="StartAndExpand" />
+                        <Label Text="{Binding Podcast.Author}" VerticalOptions="EndAndExpand" />
+                    </StackLayout>
+                </StackLayout>
+
+                <Label Text="{Binding Podcast.Description}" VerticalOptions="Start" />
+
+                <Entry Placeholder="filter" PlaceholderColor="LightGray" Text="{Binding PodcastFilter, Mode=OneWayToSource}" />
+
+                <ListView ItemsSource="{Binding PodcastEpisodes, Mode=OneWay}" Margin="5" SelectionMode="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Frame Padding="0,1,0,1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="85*" />
+                                            <ColumnDefinition Width="15*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Text="{Binding Title}" VerticalOptions="Start" Grid.Row="0" Grid.Column="0" />
+                                        <Label Text="{Binding TimeInfoBlock}" VerticalOptions="Start" Grid.Row="1" Grid.Column="0" />
+                                        <Button
+                                            Text="|>"
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Grid.RowSpan="2"
+                                            Clicked="PlayPauseButton_Clicked"
+                                            HorizontalOptions="FillAndExpand"
+                                            VerticalOptions="FillAndExpand">
+                                            <Button.Resources>
+                                                <x:Boolean x:Key="Playing">False</x:Boolean>
+                                            </Button.Resources>
+                                        </Button>
+                                    </Grid>
+                                </Frame>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+
+            <controls:BottomSheet></controls:BottomSheet>
+        </RelativeLayout>
+    </ContentPage.Content>
+</ContentPage>

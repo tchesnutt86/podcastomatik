@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Frame xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Podcastomatik.Controls.BottomSheet"
+            x:Name="bottomSheet" HasShadow="true" CornerRadius="8" Padding="1,4,1,0" BackgroundColor="#faf9f8" 
+            RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=.9,Constant=0}"
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression
+             Type=RelativeToParent,Property=Height,Factor=1,Constant=0}">
+    <StackLayout>
+        <BoxView HeightRequest="5" CornerRadius="2" WidthRequest="50" BackgroundColor="Gray" HorizontalOptions="Center"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="85*" />
+                <ColumnDefinition Width="15*" />
+            </Grid.ColumnDefinitions>
+            <Label Text="{Binding Title}" VerticalOptions="Start" Grid.Row="0" Grid.Column="0" />
+            <Label Text="{Binding TimeInfo}" VerticalOptions="Start" Grid.Row="1" Grid.Column="0" />
+            <Button
+                        Text="|>"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Grid.RowSpan="2"
+                        Clicked="Button_Clicked"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand"/>
+        </Grid>
+    </StackLayout>
+</Frame>
