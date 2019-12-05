@@ -14,6 +14,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Podcastomatik.ViewModels;
 using Podcastomatik.MessageMarkers;
+using Podcastomatik.Services;
+using Podcastomatik.Shared.Helpers;
 
 namespace Podcastomatik
 {
@@ -42,7 +44,7 @@ namespace Podcastomatik
 
         private void StreamingService_PlayerStarted(object sender, EventArgs e)
         {
-            MessagingCenter.Send(new MediaPlayerMessage(), nameof(App.Messages.PlayerStarted));
+            MessagingCenter.Send(new MediaPlayerStartedMessage(), App.PLAYER_STARTED);
         }
 
         private void PlayPauseButton_Clicked(object sender, EventArgs e)
@@ -53,15 +55,32 @@ namespace Podcastomatik
 
             if (playing)
             {
-                btn.Text = "|>";
-                MessagingCenter.Send(new MediaPlayerMessage(), nameof(App.Messages.PauseEpisode), $"{episode.Title}|{episode.OriginalDuration}");
-                streamingService.Play(episode.MediaUrl);
+                btn.Text = "▶";
+                MessagingCenter.Send(new MediaPlayerPauseMessage(), App.PAUSE_EPISODE);
+                //streamingService.Pause();
+                btn.Resources["Playing"] = false;
             }
             else
             {
-                btn.Text = "| |";
-                MessagingCenter.Send(new MediaPlayerMessage(), nameof(App.Messages.PlayEpisode), $"{episode.Title}|{episode.OriginalDuration}");
-                streamingService.Play(episode.MediaUrl);
+                TimeSpan originalDuration = Utilities.GetTimeSpanFromDuration(episode.OriginalDuration);
+                // issue. need to figure out how to go about setting the episode state in the correct order and properly.
+                // right now the episode details are not being stored correctly resulting in wrong data during play/pause.
+                //AppPropertyManager.EpisodeState = new PropertyEpisodeState
+                //{
+                //    ElapsedSeconds = 0,
+                //    EpisodeId = episode.Id,
+                //    EpisodeTitle = episode.Title,
+                //    TotalDurationSeconds = (int)Math.Round(originalDuration.TotalSeconds),
+                //};
+                btn.Text = "❚❚";
+                string formattedDurationForDisplay = $"{originalDuration.Minutes}:{originalDuration.Seconds}";
+                string totalSeconds = ((int)Math.Round(originalDuration.TotalSeconds)).ToString();
+                MessagingCenter.Send(
+                    new MediaPlayerPlayMessage(),
+                    App.PLAY_EPISODE,
+                    $"{episode.Id}|{episode.Title}|{totalSeconds}|{formattedDurationForDisplay}|{episode.MediaUrl}");
+                //streamingService.Play(episode.MediaUrl);
+                btn.Resources["Playing"] = true;
             }
         }
     }

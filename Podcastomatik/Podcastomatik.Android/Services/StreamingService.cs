@@ -20,7 +20,7 @@ namespace Podcastomatik.Droid.Services
     public class StreamingService : IStreaming
     {
         MediaPlayer player;
-        string dataSource = "https://www.radiantmediaplayer.com/media/bbb-360p.mp4";
+        //string dataSource = "https://www.radiantmediaplayer.com/media/bbb-360p.mp4";
         public event EventHandler PlayerStarted;
 
         bool IsPrepared = false;
@@ -30,21 +30,30 @@ namespace Podcastomatik.Droid.Services
             if (!IsPrepared)
             {
                 if (player == null)
+                {
                     player = new MediaPlayer();
+
+                    player.Prepared += (sender, args) =>
+                    {
+                        player.Start();
+                        IsPrepared = true;
+
+                        PlayerStarted?.Invoke(this, args);
+                    };
+                }
                 else
                     player.Reset();
 
                 player.SetDataSource(uri);
                 player.PrepareAsync();
             }
-
-            player.Prepared += (sender, args) =>
+            else
             {
                 player.Start();
-                IsPrepared = true;
 
-                PlayerStarted?.Invoke(this, args);
-            };
+                PlayerStarted?.Invoke(this, null);
+            }
+
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)

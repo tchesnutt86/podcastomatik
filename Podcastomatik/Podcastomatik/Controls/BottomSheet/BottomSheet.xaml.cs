@@ -1,4 +1,7 @@
-﻿using Podcastomatik.Shared;
+﻿using Podcastomatik.MessageMarkers;
+using Podcastomatik.Services;
+using Podcastomatik.Shared;
+using Podcastomatik.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,9 +32,27 @@ namespace Podcastomatik.Controls
             BindingContext = new BottomSheetViewModel();
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private void PlayPauseButton_Clicked(object sender, EventArgs e)
         {
+            //Button btn = sender as Button;
+            PropertyEpisodeState episodeState = AppPropertyManager.EpisodeState;
 
+            if (episodeState.IsPlaying)
+            {
+                MessagingCenter.Send(
+                    new MediaPlayerPauseMessage(),
+                    App.PAUSE_EPISODE);
+            }
+            else
+            {
+                MessagingCenter.Send(
+                    new MediaPlayerPlayMessage(),
+                    App.PLAY_EPISODE,
+                    "");
+            }
+
+            //episodeState.IsPlaying = !episodeState.IsPlaying;
+            //AppPropertyManager.EpisodeState = episodeState;
         }
     }
 }

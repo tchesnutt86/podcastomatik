@@ -9,7 +9,7 @@
             <StackLayout>
                 <controls:MainActionBar></controls:MainActionBar>
 
-                <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Horizontal" Padding="10">
                     <Image Source="{Binding PodcastImageSource}" HorizontalOptions="StartAndExpand" />
                     <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
                         <Label Text="{Binding Podcast.Title}" VerticalOptions="StartAndExpand" />
@@ -17,9 +17,11 @@
                     </StackLayout>
                 </StackLayout>
 
-                <Label Text="{Binding Podcast.Description}" VerticalOptions="Start" />
-
-                <Entry Placeholder="filter" PlaceholderColor="LightGray" Text="{Binding PodcastFilter, Mode=OneWayToSource}" />
+                <StackLayout Orientation="Vertical" Padding="10">
+                    <Label Text="{Binding Podcast.Description}" VerticalOptions="Start" />
+                    <Entry Placeholder="filter" PlaceholderColor="LightGray" Text="{Binding PodcastFilter, Mode=OneWayToSource}"
+                           VerticalOptions="Start" />
+                </StackLayout>
 
                 <ListView ItemsSource="{Binding PodcastEpisodes, Mode=OneWay}" Margin="5" SelectionMode="None">
                     <ListView.ItemTemplate>
@@ -37,18 +39,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Label Text="{Binding Title}" VerticalOptions="Start" Grid.Row="0" Grid.Column="0" />
                                         <Label Text="{Binding TimeInfoBlock}" VerticalOptions="Start" Grid.Row="1" Grid.Column="0" />
-                                        <Button
-                                            Text="|>"
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            Grid.RowSpan="2"
-                                            Clicked="PlayPauseButton_Clicked"
-                                            HorizontalOptions="FillAndExpand"
-                                            VerticalOptions="FillAndExpand">
-                                            <Button.Resources>
-                                                <x:Boolean x:Key="Playing">False</x:Boolean>
-                                            </Button.Resources>
-                                        </Button>
+                                        <controls:PlayPauseButton PodcastEpisode="{Binding}"></controls:PlayPauseButton>
                                     </Grid>
                                 </Frame>
                             </ViewCell>

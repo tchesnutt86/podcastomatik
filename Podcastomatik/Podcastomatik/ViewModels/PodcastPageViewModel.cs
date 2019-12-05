@@ -1,5 +1,7 @@
-﻿using Podcastomatik.Shared;
+﻿using Podcastomatik.Services;
+using Podcastomatik.Shared;
 using Podcastomatik.Shared.Extensions;
+using Podcastomatik.Shared.Helpers;
 using Podcastomatik.Shared.Models;
 using Podcastomatik.Shared.Models.Views;
 using Podcastomatik.Shared.Services;
@@ -65,7 +67,7 @@ namespace Podcastomatik.ViewModels
             var convertedEpisodes = results.Select(__episode => new PodcastEpisodeView
             {
                 Author = __episode.Author,
-                Duration = GetDuration(__episode.Duration),
+                Duration = GetDurationStrMinutes(__episode.Duration),
                 Id = __episode.Id,
                 IsExplicit = __episode.IsExplicit,
                 Keywords = __episode.Keywords,
@@ -86,7 +88,7 @@ namespace Podcastomatik.ViewModels
 
         private string GetTimeInfoBlock(DateTime publishDateUtc, string duration)
         {
-            return $"{GetTimeSincePublished(publishDateUtc)} | {GetDuration(duration)}";
+            return $"{GetTimeSincePublished(publishDateUtc)} | {GetDurationStrMinutes(duration)}";
         }
 
         private string GetTimeSincePublished(DateTime publishDateUtc)
@@ -115,18 +117,9 @@ namespace Podcastomatik.ViewModels
             }
         }
 
-        private string GetDuration(string duration)
+        private string GetDurationStrMinutes(string duration)
         {
-            string fixedDuration = duration;
-
-            if (duration.Split(':').Length == 2)
-                fixedDuration = $"00:{duration}";
-            else if (duration.Split(':').Length == 1)
-                fixedDuration = $"00:{Math.Round(Convert.ToDouble(duration))}:00";
-
-            var ts = TimeSpan.Parse(fixedDuration);
-
-            return $"{Math.Round(ts.TotalMinutes)} min";
+            return $"{Math.Round(Utilities.GetTimeSpanFromDuration(duration).TotalMinutes)} min";
         }
 
         private ImageSource GetImageSourceFromPath(string path)
@@ -157,12 +150,12 @@ namespace Podcastomatik.ViewModels
 
         }
 
-        private void PlayPauseClicked(object sender, EventArgs e)
-        {
-            Button btn = sender as Button;
+        //private void PlayPauseClicked(object sender, EventArgs e)
+        //{
+        //    Button btn = sender as Button;
 
-            btn.Text = "||";
-        }
+        //    btn.Text = "||";
+        //}
 
         string FormatTime(double time)
         {

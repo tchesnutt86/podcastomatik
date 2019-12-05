@@ -1,6 +1,6 @@
 ﻿namespace Podcastomatik.MessageMarkers
 {
-    public class MediaPlayerMessage
+    public class MediaPlayerPlayMessage
     {
     }
 }

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="Podcastomatik.Controls.PlayPauseButton"
+        Grid.Row="0"
+        Grid.Column="1"
+        Grid.RowSpan="2"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
+    <Button
+        x:Name="MyButton"
+        Text="{Binding ButtonText}"
+        TextColor="Blue"
+        FontSize="Medium"
+        
+        Clicked="PlayPauseButton_Clicked"
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        WidthRequest="30"
+        HeightRequest="30"
+        BorderRadius="15"
+        BorderWidth="2"
+        BorderColor="Black"
+        BackgroundColor="White"
+        Padding="0">
+        <Button.Resources>
+            <x:Boolean x:Key="Playing">False</x:Boolean>
+        </Button.Resources>
+    </Button>
+</ContentView>

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using static System.Environment;
 
@@ -25,7 +26,16 @@ namespace Podcastomatik.ViewModels
         private Func<string, object> findByNameFunc;
 
         //public ObservableCollection<object> Podcasts { get; set; }
-        public IEnumerable<Podcast> Podcasts { get; set; }
+        private IEnumerable<Podcast> podcasts;
+        public IEnumerable<Podcast> Podcasts
+        {
+            get => podcasts;
+            set
+            {
+                podcasts = value;
+                RaisePropertyChanged();
+            }
+        }
         public IEnumerable<Welpers> yoyo { get; set; }
         public IEnumerable<Welpers> YoYo
         {
@@ -42,20 +52,24 @@ namespace Podcastomatik.ViewModels
             navigation = nav;
             findByNameFunc = findByName;
 
-            Podcasts = GetPodcastsAndLocalizeImageUrls();
+            GetPodcastsAndLocalizeImageUrls().ContinueWith(__result =>
+            {
+                Podcasts = __result.Result;
 
-            InitializeMyPodcastSubscriptions();
+                //InitializeMyPodcastSubscriptions();
+                InitLayout();
+            });
         }
 
-        private IEnumerable<Podcast> GetPodcastsAndLocalizeImageUrls()
+        private async Task<IEnumerable<Podcast>> GetPodcastsAndLocalizeImageUrls()
         {
-            var results = db.Get<Podcast>("podcasts");
+            var results = await db.GetAsync<Podcast>("podcasts");
             string sandboxPath = Path.Combine(Environment.GetFolderPath(SpecialFolder.LocalApplicationData), "images");
             if (!Directory.Exists(sandboxPath))
                 Directory.CreateDirectory(sandboxPath);
             var fileNames = Directory.GetFiles(sandboxPath);
 
-            var modifiedResults = results.Select((Podcast __item) =>
+            var modifiedResults = results.AsParallel().Select((Podcast __item) =>
             {
                 string fileAndPath = fileNames.FirstOrDefault(__fn => __fn.Split('\\').LastOrDefault() == __item.Id.ToString());
 
@@ -65,15 +79,18 @@ namespace Podcastomatik.ViewModels
                 {
                     try
                     {
-                        byte[] arr = new WebClient().DownloadData(__item.ImageUrl);
+                        using (var webClient = new WebClient())
+                        {
+                            byte[] arr = webClient.DownloadData(__item.ImageUrl);
 
-                        Regex rx = new Regex(@"[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"); // Get file name and extension from url.
-                        string newFileName = __item.Id.ToString() + "." + rx.Match(__item.ImageUrl).Value.Split('.')[1];
-                        string newFilePath = Path.Combine(sandboxPath, newFileName);
+                            Regex rx = new Regex(@"[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))"); // Get file name and extension from url.
+                            string newFileName = __item.Id.ToString() + "." + rx.Match(__item.ImageUrl).Value.Split('.')[1];
+                            string newFilePath = Path.Combine(sandboxPath, newFileName);
 
-                        File.WriteAllBytes(newFilePath, arr);
-
-                        __item.ImageUrl = newFilePath;
+                            File.WriteAllBytes(newFilePath, arr); 
+                            
+                            __item.ImageUrl = newFilePath;
+                        }
                     }
                     catch
                     {
@@ -85,6 +102,35 @@ namespace Podcastomatik.ViewModels
             });
 
             return modifiedResults;
+        }
+
+        private void InitLayout()
+        {
+            StackLayout sl = (StackLayout)findByNameFunc("MyPodcastSubscriptionsLayout");
+
+            // add kiddos
+            StackLayout sl1 = new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                VerticalOptions = LayoutOptions.Start,
+                HeightRequest = 100,
+                BackgroundColor = Color.Brown,
+            };
+            sl1.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(0).ImageUrl) });
+            sl1.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(1).ImageUrl) });
+
+            StackLayout sl2 = new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                VerticalOptions = LayoutOptions.Start,
+            };
+            sl2.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(2).ImageUrl) });
+            sl2.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(3).ImageUrl) });
+
+            sl.Children.Add(sl1);
+            sl.Children.Add(sl2);
         }
 
         private void InitializeMyPodcastSubscriptions()
@@ -109,7 +155,7 @@ namespace Podcastomatik.ViewModels
                     var src = GetImageSourceFromPath(podcastItem.ImageUrl);
                     ImageButton imgButton = new ImageButton { Source = src };
                     imgButton.Clicked += (obj, eventArgs) => OnMySubscriptionsPodcastItemClicked(obj, eventArgs, podcastItem);
-                    Image image = new Image() { Source = src };
+                    //Image image = new Image() { Source = src };
 
                     grid.Children.Add(imgButton, col, row);
                 }
