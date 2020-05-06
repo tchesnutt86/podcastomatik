@@ -22,7 +22,6 @@ namespace Podcastomatik
     [DesignTimeVisible(true)]
     public partial class MainPage : ContentPage
     {
-        
         private IStreaming streamingService { get; set; }
         //public string Dur
         //{
@@ -41,8 +40,9 @@ namespace Podcastomatik
 
             On<Xamarin.Forms.PlatformConfiguration.iOS>().SetUseSafeArea(true);
 
-
             BindingContext = new MainPageViewModel(Navigation, FindByName);
+
+            mainLayout.RaiseChild(mainActionBar);
         }
     }
 }

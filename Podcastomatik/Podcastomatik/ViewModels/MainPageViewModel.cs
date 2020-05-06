@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using static System.Environment;
+using Xamarin.Essentials;
+using Podcastomatik.Controls;
 
 namespace Podcastomatik.ViewModels
 {
@@ -24,6 +26,8 @@ namespace Podcastomatik.ViewModels
         DbConnector db = new DbConnector();
         INavigation navigation;
         private Func<string, object> findByNameFunc;
+        private Grid grdMyPodcastSubscriptions;
+        private Label lblMyPodcastSubs;
 
         //public ObservableCollection<object> Podcasts { get; set; }
         private IEnumerable<Podcast> podcasts;
@@ -36,7 +40,7 @@ namespace Podcastomatik.ViewModels
                 RaisePropertyChanged();
             }
         }
-        public IEnumerable<Welpers> yoyo { get; set; }
+        private IEnumerable<Welpers> yoyo;
         public IEnumerable<Welpers> YoYo
         {
             get => yoyo;
@@ -52,13 +56,16 @@ namespace Podcastomatik.ViewModels
             navigation = nav;
             findByNameFunc = findByName;
 
-            GetPodcastsAndLocalizeImageUrls().ContinueWith(__result =>
-            {
-                Podcasts = __result.Result;
+            // Components...
+            grdMyPodcastSubscriptions = (Grid)findByNameFunc("MyPodcastSubscriptionsGrid");
+            lblMyPodcastSubs = (Label)findByNameFunc("MyPodcastSubsLabel");
+            // load actual data. commented out tto mess with UI for now. uncomment later
+            //GetPodcastsAndLocalizeImageUrls().ContinueWith(__result =>
+            //{
+            //    Podcasts = __result.Result.ToList();
 
-                //InitializeMyPodcastSubscriptions();
-                InitLayout();
-            });
+            //    MainThread.BeginInvokeOnMainThread(() => InitializeMyPodcastSubscriptions());
+            //});
         }
 
         private async Task<IEnumerable<Podcast>> GetPodcastsAndLocalizeImageUrls()
@@ -106,70 +113,65 @@ namespace Podcastomatik.ViewModels
 
         private void InitLayout()
         {
-            StackLayout sl = (StackLayout)findByNameFunc("MyPodcastSubscriptionsLayout");
-
-            // add kiddos
-            StackLayout sl1 = new StackLayout
+            grdMyPodcastSubscriptions.RowDefinitions.Add(new RowDefinition
             {
-                Orientation = StackOrientation.Horizontal,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                VerticalOptions = LayoutOptions.Start,
-                HeightRequest = 100,
-                BackgroundColor = Color.Brown,
-            };
-            sl1.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(0).ImageUrl) });
-            sl1.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(1).ImageUrl) });
-
-            StackLayout sl2 = new StackLayout
+                Height = new GridLength(1, GridUnitType.Star),
+            });
+            grdMyPodcastSubscriptions.ColumnDefinitions.Add(new ColumnDefinition
             {
-                Orientation = StackOrientation.Horizontal,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                VerticalOptions = LayoutOptions.Start,
-            };
-            sl2.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(2).ImageUrl) });
-            sl2.Children.Add(new ImageButton { Source = GetImageSourceFromPath(Podcasts.ElementAt(3).ImageUrl) });
+                Width = new GridLength(1, GridUnitType.Star),
+            });
+            grdMyPodcastSubscriptions.ColumnDefinitions.Add(new ColumnDefinition
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+            });
+            grdMyPodcastSubscriptions.ColumnDefinitions.Add(new ColumnDefinition
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+            });
+            grdMyPodcastSubscriptions.ColumnDefinitions.Add(new ColumnDefinition
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+            });
 
-            sl.Children.Add(sl1);
-            sl.Children.Add(sl2);
+            grdMyPodcastSubscriptions.Children.Add(new BoxView { BackgroundColor = Color.Red }, 0, 0);
+            grdMyPodcastSubscriptions.Children.Add(new BoxView { BackgroundColor = Color.Red }, 1, 0);
+            grdMyPodcastSubscriptions.Children.Add(new BoxView { BackgroundColor = Color.Red }, 2, 0);
+            grdMyPodcastSubscriptions.Children.Add(new BoxView { BackgroundColor = Color.Red }, 3, 0);
         }
 
         private void InitializeMyPodcastSubscriptions()
         {
-            // Hard coding for now, but later need to calculate rows/cols.
-            int rows = 2;
-            int columns = 4;
-            
-            Grid grid = (Grid)findByNameFunc("MyPodcastSubscriptionsGrid");
-            for (int x = 0; x < rows; x++)
-                grid.RowDefinitions.Add(new RowDefinition());
-            for (int y = 0; y < columns; y++)
-                grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.BackgroundColor = Color.AliceBlue;
+            int itemsPerRow = 4;
 
-            for (int row = 0; row < rows; row++)
+            // 4 columns per row.
+            grdMyPodcastSubscriptions.ColumnDefinitions = new ColumnDefinitionCollection
             {
-                for (int col = 0; col < columns; col++)
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+            };
+
+            for (int t = 0; t < Podcasts.Count(); t++)
+            {
+                var podcastItem = Podcasts.ElementAt(t);
+
+                if (t % itemsPerRow == 0)
                 {
-                    int index = ((row + 1) * (col + 1)) - 1;
-                    var podcastItem = Podcasts.ElementAt(index);
-                    var src = GetImageSourceFromPath(podcastItem.ImageUrl);
-                    ImageButton imgButton = new ImageButton { Source = src };
-                    imgButton.Clicked += (obj, eventArgs) => OnMySubscriptionsPodcastItemClicked(obj, eventArgs, podcastItem);
-                    //Image image = new Image() { Source = src };
-
-                    grid.Children.Add(imgButton, col, row);
+                    grdMyPodcastSubscriptions.RowDefinitions.Add(new RowDefinition
+                    {
+                        Height = new GridLength(1, GridUnitType.Auto),
+                    });
                 }
+
+                ImageButton imgButton = new ImageButton { Source = GetImageSourceFromPath(podcastItem.ImageUrl) };
+                imgButton.Clicked += (obj, eventArgs) => OnMySubscriptionsPodcastItemClicked(obj, eventArgs, podcastItem);
+
+                grdMyPodcastSubscriptions.Children.Add(imgButton, t % itemsPerRow, grdMyPodcastSubscriptions.RowDefinitions.Count - 1);
             }
-            //StackLayout stackLayout = (StackLayout)findByNameFunc("MyPodcastSubscriptionsLayout");
 
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    var src = GetImageSourceFromPath(Podcasts.ElementAt(i).ImageUrl);
-            //    Image image = new Image() { Source = src };
-
-            //    stackLayout.Children.Add(image);
-            //}
-
+            lblMyPodcastSubs.Text = "My Podcast Subscriptions";
         }
 
         private ImageSource GetImageSourceFromPath(string path)

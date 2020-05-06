@@ -10,49 +10,25 @@
              mc:Ignorable="d">
     <ContentPage.Content>
     <ScrollView>
-        <RelativeLayout>
+        <RelativeLayout x:Name="mainLayout">
+            <controls:MainActionBar x:Name="mainActionBar"
+                RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}"
+                RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}" />
             <StackLayout
                 RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}"
-                RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}">
-                <controls:MainActionBar></controls:MainActionBar>
+                RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}"
+                RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Y, Factor=1, Constant=45}"
+                Padding="5,5,5,5">
 
-                <Label Text="My Podcast Subscriptions" HorizontalOptions="StartAndExpand" />
-                <StackLayout
-                    x:Name="MyPodcastSubscriptionsLayout"
-                    Padding="10,5,10,5"
-                    VerticalOptions="Start"
-                    HorizontalOptions="StartAndExpand"
-                    BackgroundColor="Orange">
-                    <!-- Main content -->
-                
-                    <!--<StackLayout x:Name="MyPodcastSubscriptionsLayout"
-                             Orientation="Horizontal"
-                             HorizontalOptions="FillAndExpand"
-                             VerticalOptions="Start">
-                        <Grid x:Name="MyPodcastSubscriptionsGrid"
-                              ColumnSpacing="1"
-                              RowSpacing="1">
-                        </Grid>
-                    </StackLayout>-->
-
-
-                    <!--<ListView x:Name="lvPodcasts" ItemsSource="{Binding Podcasts}" Margin="5" ItemSelected="OnListItemSelected" FlowDirection="LeftToRight" HorizontalOptions="">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <StackLayout Margin="0,0,0,0" Orientation="Horizontal" HorizontalOptions="StartAndExpand">
-                                    <Image Source="{Binding image_url}" HorizontalOptions="Start" />
-                                    <Label Text="{Binding title}" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
-                                </StackLayout>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>-->
-                </StackLayout>
+                <Label x:Name="MyPodcastSubsLabel" Text="My Podcast Subscriptions (loading...)" VerticalOptions="Start" HorizontalOptions="StartAndExpand" />
+                <Grid x:Name="MyPodcastSubscriptionsGrid"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="Start"
+                      ColumnSpacing="2"
+                      RowSpacing="0">
+                </Grid>
 
             </StackLayout>
-
-        
         </RelativeLayout>
     </ScrollView>
     </ContentPage.Content>
